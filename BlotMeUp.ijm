@@ -40,6 +40,8 @@ macro "Western Blot Action Tool - T0504BT5504lTa504oTf504tT0a04MT5a04eT0f04UT5f0
 	output = input + File.separator + "WB - Datas" + File.separator ;
 		File.makeDirectory(output);
 
+	var rolling_ball = 0.01;
+
 setBatchMode(true);
 	for (w = 0; w < file_list.length; w++) {
 	current_imagePath = input+file_list[w];
@@ -50,20 +52,26 @@ setBatchMode(true);
 setBatchMode(false);
 			if (channels >= 1) {
 		open(current_imagePath);
-		image_name = getTitle();
+	image_name = getTitle();
 		run("Duplicate...", "title=1");
 		run("Duplicate...", "title=2");
 		run("Invert");
+		selectImage("1");
+		run("Set Measurements...", "mean display redirect=None decimal=4");
+		setTool("line");
+		waitForUser("1/3 Measure the min length of your protein band\nThe line tool is automatically selected.\n2/3 Press M, to measure the length.\n3/3 Close the result windows.");
+	measure = getNumber("The min length is: ", rolling_ball);
+		selectImage("1");
 		run("Duplicate...", "title=3");
-		run("Subtract Background...", "rolling=70 create sliding");
-		imageCalculator("Subtract create", "2","3");
+		run("Subtract Background...", "rolling="+measure+" create sliding");
+		imageCalculator("Subtract create 32-bit", "2","3");
 		do {
 		showMessage("You are about to identify the horizontal lane of protein.");
 		selectImage("Result of 2");
-		setAutoThreshold("Otsu dark");
+		setAutoThreshold("Otsu dark no-reset");
 		run("Threshold...");
 	Title = "1/2";
-	Message = "Highlight your positive signal only.\n1/3 - Select the algorithm you wish (Default, Li, Otsu etc...)\nStick to it.\n2/3 - Slide the top bar until all objects are segmented.\n3/3 - Once satisfied, press OK.";
+	Message = "Highlight your positive signal only.\n1/3 - Select the algorithm you wish (Default, Li, Otsu etc...)\nStick to it.\n2/3 - Slide bars until all objects are segmented.\n3/3 - Once satisfied, press OK.";
 		waitForUser(Title, Message);
 		run("Create Mask");
 		run("Open");
@@ -75,14 +83,14 @@ setBatchMode(false);
 	Message1 = "The selection tool is automatically selected.\nFrame the lane of your protein of interest, then press OK.";
 		waitForUser(Title1, Message1);
 		run("Set Measurements...", "integrated limit display redirect=image_name decimal=4");
-		run("Analyze Particles...", "size=5-Infinity add");
+		run("Analyze Particles...", "size=0-Infinity add");
 		run("ROI Manager...");
 	Group = roiManager("count");
 	for (b = 0 ; b < Group; b++) {
 		roiManager("Select", b);
 		roiManager("Rename", getString("Protein name: ", "Add a name"));
 	}
-		name_result = getString("Name your experiment: ", "Caspase-3 12h");
+	name_result = getString("Name your experiment: ", "Caspase-3 12h");
 		selectImage(image_name);
 		roiManager("Select", newArray());
 		roiManager("Measure");
