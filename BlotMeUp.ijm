@@ -7,6 +7,7 @@
  *	2 rue du Pr Bernard Descottes, 87025 Limoges
  *	
  *	Copyright (C) Made on the 09.2023 and written by Jean-Yves Alejandro Frayssinhes.
+ *	Tool training using datas from co-partner Suzan Ghaddar.
  *	Contact: jean-yves.frayssinhes@cnrs.fr
  *	
  *	
