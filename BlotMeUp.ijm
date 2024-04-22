@@ -40,12 +40,14 @@ macro "Western Blot Action Tool - T0504BT5504lTa504oTf504tT0a04MT5a04eT0f04UT5f0
 	output = input + File.separator + "WB - Datas" + File.separator ;
 		File.makeDirectory(output);
 
+setBatchMode(true);
 	for (w = 0; w < file_list.length; w++) {
 	current_imagePath = input+file_list[w];
 			if (!File.isDirectory(current_imagePath)){
 		open(current_imagePath);
 		getDimensions(width, height, channels, slices, frames);
 		run("Close All");
+setBatchMode(false);
 			if (channels >= 1) {
 		open(current_imagePath);
 		image_name = getTitle();
@@ -61,7 +63,7 @@ macro "Western Blot Action Tool - T0504BT5504lTa504oTf504tT0a04MT5a04eT0f04UT5f0
 		setAutoThreshold("Otsu dark");
 		run("Threshold...");
 	Title = "1/2";
-	Message = "Highlight your positive signal only.\n1/3 - Select the algorithm you wish (Default, Li, Otsu etc...)\n Stick to it.\n2/3 - Slide the top bar until all objects are segmented.\n3/3 - Once satisfied, press OK.";
+	Message = "Highlight your positive signal only.\n1/3 - Select the algorithm you wish (Default, Li, Otsu etc...)\nStick to it.\n2/3 - Slide the top bar until all objects are segmented.\n3/3 - Once satisfied, press OK.";
 		waitForUser(Title, Message);
 		run("Create Mask");
 		run("Open");
@@ -92,6 +94,7 @@ macro "Western Blot Action Tool - T0504BT5504lTa504oTf504tT0a04MT5a04eT0f04UT5f0
 		run("Select All");
 		roiManager("Save", output + name_result + ".zip");
 		roiManager("delete");
+		selectImage("Result of 2");
 
 	Question = getBoolean("Is there another protein lane to quantify on this blot?");
 		} while (Question == 1);
