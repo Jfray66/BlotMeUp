@@ -35,6 +35,16 @@ macro "Western Blot Action Tool - T0504BT5504lTa504oTf504tT0a04MT5a04eT0f04UT5f0
 			
 		run("Close All");
 
+	array = newArray("Tif", "jpg", "png");
+//	var file_extension = "Tif";
+
+	Dialog.create("Image format");
+//		Dialog.addString("The file extension of your image is: ", file_extension);
+		Dialog.addChoice("The file extension of your image(s) is: ", array);
+		Dialog.show();
+//	file_extension = Dialog.getString();
+	file_extension = Dialog.getChoice();
+
 	input = getDirectory("WB images folder to analyse.");
 	file_list = getFileList(input);
 	output = input + File.separator + "WB - Datas" + File.separator ;
@@ -42,20 +52,22 @@ macro "Western Blot Action Tool - T0504BT5504lTa504oTf504tT0a04MT5a04eT0f04UT5f0
 
 setBatchMode(true);
 	for (w = 0; w < file_list.length; w++) {
+		if (endsWith(file_list[w], file_extension)) {
 	current_imagePath = input+file_list[w];
-			if (!File.isDirectory(current_imagePath)){
 		open(current_imagePath);
 		getDimensions(width, height, channels, slices, frames);
 		run("Close All");
 setBatchMode(false);
-			if (channels >= 1) {
+			if (channels >= 1)	{
 		open(current_imagePath);
+			gray = is("grayscale");
+			if (gray == 1) {
 //		image_name = getTitle();
 		LUT = is("Inverting LUT");
-			if (LUT == 1) {
+			if (LUT == 0) {
 				run("Invert LUT");
 				run("Invert");
-            }
+			}
 //		run("Duplicate...", "title="+1+"-"+image_name);
 		second_name = getTitle();
 		do {
@@ -103,6 +115,7 @@ setBatchMode(false);
 	Question = getBoolean("Is there another protein lane to quantify on this blot?");
 		} while (Question == 1);
 		run("Close All");
+}
 }
 }
 }
